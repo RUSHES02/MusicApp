@@ -19,35 +19,37 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.musicapp.R
+import com.example.musicapp.domain.data.Song
 
 @Composable
 fun SquareMusicHolder(
     modifier: Modifier,
-    image: String,
-    name: String,
+    song: Song,
+    onClick: () -> Unit,
 
-) {
+    ) {
     Card(
         modifier = modifier
             .width(100.dp)
             .height(100.dp),
         shape = RoundedCornerShape(15.dp),
-        elevation = CardDefaults.cardElevation(5.dp)
+        elevation = CardDefaults.cardElevation(5.dp),
+        onClick = onClick
     ) {
         Box{
             AsyncImage(
-                modifier = modifier
-                    .fillMaxSize(),
+                model = song.imageUrl,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                model = image,
-                fallback = painterResource(R.drawable.img_default),
                 error = painterResource(R.drawable.img_default),
-                contentDescription = "")
+                fallback = painterResource(R.drawable.img_default)
+            )
+
 //            Image(
 //                modifier = Modifier
 //                    .fillMaxSize(),
@@ -77,7 +79,7 @@ fun SquareMusicHolder(
                 contentAlignment = Alignment.BottomCenter
             ){
                 Text(
-                    text = name,
+                    text = song.title,
                     style = TextStyle(
                         color = Color.White,
                         fontSize = 10.sp,
@@ -90,12 +92,12 @@ fun SquareMusicHolder(
     }
 }
 
-@Preview
-@Composable
-fun SquareMusicHolderPreview() {
-    SquareMusicHolder(
-        modifier = Modifier,
-        image = "https://example.com/sample_image.jpg",
-        name = "Sample Song Name"
-    )
-}
+//@Preview
+//@Composable
+//fun SquareMusicHolderPreview() {
+//    SquareMusicHolder(
+//        modifier = Modifier,
+//        image = "app/src/main/res/drawable/img_default.jpeg",
+//        name = "Sample Song Name"
+//    )
+//}

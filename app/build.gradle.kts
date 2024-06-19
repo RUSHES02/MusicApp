@@ -3,6 +3,9 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -68,6 +71,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -75,6 +80,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
     implementation(libs.coil.compose)
 
     implementation (libs.material3)
@@ -94,4 +100,21 @@ dependencies {
 
     // OkHttp (often used with Retrofit)
     implementation (libs.okhttp)
+
+    // Dagger - Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // ExoPlayer
+//    api(libs.bundles.exoplayer)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.session)
+
+    implementation(libs.androidx.material)
+    implementation(libs.ui.tooling)
+
+    implementation(libs.androidx.constraintlayout.compose)
+
+    implementation(libs.androidx.navigation.compose)
 }

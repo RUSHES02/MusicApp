@@ -1,49 +1,118 @@
 package com.example.musicapp.ui.home.viewModel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.musicapp.api.RetrofitInstance
-import com.example.musicapp.dumm.AlbumD
-import com.example.musicapp.modals.Albums
-import kotlinx.coroutines.delay
+import com.example.musicapp.domain.Resource
+import com.example.musicapp.modal.Albums
+import com.example.musicapp.repository.MusicRepository
+import com.example.musicapp.services.MusicController
+import com.example.musicapp.ui.home.HomeEvent
+import com.example.musicapp.ui.home.HomeUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AlbumViewModel: ViewModel() {
 
-    private val _album = MutableStateFlow<String?>(null)
-    val album: StateFlow<String?> get() = _album
+@HiltViewModel
+class AlbumViewModel @Inject constructor(private val musicController: MusicController, private val musicRepository: MusicRepository) : ViewModel()  {
 
-    private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> get() = _errorMessage
+    private val _albums = MutableStateFlow<Albums?>(null)
+//    val albums: StateFlow<Albums?> get() = _albums
 
-    init {
-        fetchAlbum()
+    var homeUiState by mutableStateOf(HomeUiState())
+
+//    private val _errorMessage = MutableLiveData<String>()
+    fun onEvent(event: HomeEvent) {
+        when (event) {
+            HomeEvent.PlaySong -> playSong()
+
+            HomeEvent.PauseSong -> pauseSong()
+
+            HomeEvent.ResumeSong -> resumeSong()
+
+            HomeEvent.FetchSong -> fetchAlbum()
+
+            is HomeEvent.OnSongSelected -> homeUiState =
+                homeUiState.copy(selectedSong = event.selectedSong)
+
+            HomeEvent.SkipToNextSong -> skipToNextSong()
+
+            is HomeEvent.SkipToPreviousSong -> skipToPreviousSong()
+        }
     }
 
-    fun fetchAlbum() {
-        Log.d("view model", "Fetching songs...")
+
+    private fun fetchAlbum() {
         viewModelScope.launch {
-            try {
-//                delay(50000)
-                val response = RetrofitInstance.api.getAlbum()
-//                Log.d("view model", "Request URL: ${response.raw().request.url}")
-//                Log.d("view model", "Request Headers: ${response.raw().request.headers}")
-                if (response.isSuccessful && response.body() != null) {
-                    _album.value = response.body()!!
-                    Log.d("view model", "Responce${response.body()}")
-                } else {
-                    _errorMessage.postValue("Error: ${response.message()}")
+            Log.d("view model", "Fetching songs.....")
+            musicRepository.getSongs().catch { exception ->
+                homeUiState = homeUiState.copy(
+                    loading = false,
+                    errorMessage = exception.message
+                )
+                Log.d("view Model", "${exception.message}")
+            }.collect { resource ->
+                homeUiState = when (resource) {
+                    is Resource.Success -> {
+                        resource.data?.let { songs ->
+                            musicController.addMediaItems(songs)
+                        }
+                        Log.d("view Model", " songs ${ resource.data.toString() }")
+
+                        homeUiState.copy(
+                            loading = false,
+                            songs = resource.data!!
+                        )
+                    }
+
+                    is Resource.Loading -> {
+                        homeUiState.copy(
+                            loading = true,
+                            errorMessage = null
+                        )
+                    }
+
+                    is Resource.Error -> {
+                        homeUiState.copy(
+                            loading = false,
+                            errorMessage = resource.message
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                Log.e("view model", "Exception: ${e.message}")
-                _errorMessage.postValue("Exception: ${e.message}")
             }
         }
+    }
+
+    private fun playSong() {
+        homeUiState.apply {
+            songs.indexOf(selectedSong).let { song ->
+                musicController.play(song)
+            }
+        }
+    }
+
+    private fun pauseSong() = musicController.pause()
+
+    private fun resumeSong() = musicController.resume()
+
+    private fun skipToNextSong() {
+        musicController.skipToNextSong()
+        homeUiState = homeUiState.copy(
+            selectedSong = musicController.getCurrentSong()
+        )
+    }
+
+    private fun skipToPreviousSong()  {
+        musicController.skipToPreviousSong()
+        homeUiState = homeUiState.copy(
+            selectedSong = musicController.getCurrentSong()
+        )
     }
 
 }

@@ -12,3 +12,6 @@ val Pink40 = Color(0xFF7D5260)
 
 val bg_color = Color(0xFF1d1d1f)
 val text_Inactive = Color(0xff9b9b9b)
+
+val bg_purple = Color(0xff3a2a4c)
+val bg_grey = Color(0xff1c1c1e)

@@ -1,9 +1,9 @@
-package com.example.musicapp.dumm
+package com.example.musicapp.data2
 
 
 import com.google.gson.annotations.SerializedName
 
-data class AlbumD(
+data class Albums2(
     @SerializedName("albums")
     val albums: List<Album>
 ) {
@@ -87,7 +87,7 @@ data class AlbumD(
             val width: Int
         )
 
-        data class Tracks(
+        data class  Tracks(
             @SerializedName("items")
             val items: List<Item>,
             @SerializedName("limit")
