@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,12 +36,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.musicapp.R
+import com.example.musicapp.domain.PlayerState
 import com.example.musicapp.domain.data.Song
 import com.example.musicapp.ui.theme.bg_grey
 import com.example.musicapp.ui.theme.bg_purple
@@ -58,10 +57,14 @@ fun SongScreen(
     var sliderPosition by remember { mutableFloatStateOf(0f) }
     Log.d("song screen","$song")
 
+    val playPauseIoc = painterResource(if (musicControllerUiState.playerState == PlayerState.PLAYING) R.drawable.ic_pause else R.drawable.ic_play)
+
+    val playPauseOnClick = {
+        onEvent(if (musicControllerUiState.playerState == PlayerState.PLAYING) SongEvent.PauseSong else SongEvent.ResumeSong)
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
@@ -75,8 +78,12 @@ fun SongScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp)
-                .layoutId("bgColumn"),
+                .padding(
+                    top = 50.dp,
+                    bottom = 20.dp,
+                    start = 20.dp,
+                    end = 20.dp
+                ),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
 
@@ -101,11 +108,14 @@ fun SongScreen(
                 )
             }
 
+
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.Center,
             ) {
                 musicControllerUiState.currentMusic?.let {
+
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -128,9 +138,9 @@ fun SongScreen(
                     Text(
                         text = it.title,
                         style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                    ),
-                    color = Color.White
+                            fontWeight = FontWeight.ExtraBold,
+                        ),
+                        color = Color.White
                     )
                     Text(
                         text = it.artist,
@@ -144,12 +154,15 @@ fun SongScreen(
                 Box {
                     Column {
                         Slider(
-                            value = sliderPosition,
-                            onValueChange = { sliderPosition = it },
+                            value = musicControllerUiState.currentPosition.toFloat(),
+                            valueRange = 0f..musicControllerUiState.totalDuration.toFloat(),
+                            onValueChange =  { newPosition ->
+                                onEvent(SongEvent.SeekSongToPosition(newPosition.toLong()))
+                            },
                             colors = SliderDefaults.colors(
                                 thumbColor = Color.Transparent,
                                 activeTrackColor = Color.White,
-                                inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+                                inactiveTrackColor = Color.Gray,
                             ),
                         )
 
@@ -174,7 +187,7 @@ fun SongScreen(
                                 modifier = Modifier
                                     .size(100.dp),
                                 onClick = {
-                                    onEvent(SongEvent.PauseSong)
+                                    playPauseOnClick()
                                 }
                             ) {
                                 Box(
@@ -185,7 +198,7 @@ fun SongScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        painter = painterResource(R.drawable.ic_pause),
+                                        painter = playPauseIoc,
                                         contentDescription = "play",
                                         modifier = Modifier.scale(0.5f),
                                         tint = Color.Black
@@ -208,7 +221,6 @@ fun SongScreen(
                     }
                 }
             }
-
         }
     }
 }

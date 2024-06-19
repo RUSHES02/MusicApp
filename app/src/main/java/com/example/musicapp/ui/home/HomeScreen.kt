@@ -40,6 +40,8 @@ fun HomeScreen(
     onEvent: (HomeEvent) -> Unit,
     uiState: HomeUiState,
     onClick: () -> Unit,
+    modifier: Modifier
+    ,
 ) {
 
     Surface(
@@ -72,7 +74,13 @@ fun HomeScreen(
 
                 loading == false && errorMessage == null -> {
                     Column(
-                        modifier = Modifier.padding(20.dp)
+                        modifier = Modifier
+                            .padding(
+                                top = 50.dp,
+                                bottom = 20.dp,
+                                start = 20.dp,
+                                end = 20.dp
+                            )
                     ) {
                         Text(
                             text = "Browse",
