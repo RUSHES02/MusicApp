@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MusicAppTheme {
-                sharedViewModel= hiltViewModel()
+                sharedViewModel = hiltViewModel()
                 MusicApp(
                     sharedViewModel = sharedViewModel,
                     modifier = Modifier

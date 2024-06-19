@@ -56,7 +56,7 @@ fun SongScreen(
     ) {
 
     var sliderPosition by remember { mutableFloatStateOf(0f) }
-    Log.d("song screen","here")
+    Log.d("song screen","$song")
 
     Box(
         modifier = Modifier

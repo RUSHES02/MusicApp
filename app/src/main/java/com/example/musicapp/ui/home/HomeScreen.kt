@@ -31,8 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.musicapp.domain.data.Song
-import com.example.musicapp.ui.home.holders.LongMusicHolder
-import com.example.musicapp.ui.home.holders.SquareMusicHolder
+import com.example.musicapp.ui.home.components.LongMusicHolder
+import com.example.musicapp.ui.home.components.SquareMusicHolder
 import com.example.musicapp.ui.theme.bg_color
 
 @Composable

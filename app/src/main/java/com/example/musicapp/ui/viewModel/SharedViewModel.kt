@@ -24,13 +24,12 @@ class SharedViewModel @Inject constructor(private val musicController: MusicCont
     private fun setMediaControllerCallback() {
 
         musicController.mediaControllerCallback = { playerState, currentMusic, currentPosition, totalDuration, isShuffleEnabled, isRepeatOneEnabled ->
+            println("$playerState, $currentMusic, $currentPosition, $totalDuration,$isShuffleEnabled, $isRepeatOneEnabled")
             musicControllerUiState = musicControllerUiState.copy(
                 playerState = playerState,
                 currentMusic = currentMusic,
                 currentPosition = currentPosition,
                 totalDuration = totalDuration,
-                isShuffleEnabled =  isShuffleEnabled,
-                isRepeatOneEnabled = isRepeatOneEnabled
             )
         }
 
@@ -39,7 +38,6 @@ class SharedViewModel @Inject constructor(private val musicController: MusicCont
             viewModelScope.launch {
                 while (true) {
                     musicControllerUiState = musicControllerUiState.copy(
-
                         currentPosition = musicController.getCurrentPosition()
                     )
                 }

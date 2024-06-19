@@ -1,4 +1,4 @@
-package com.example.musicapp.ui.home.holders
+package com.example.musicapp.ui.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
